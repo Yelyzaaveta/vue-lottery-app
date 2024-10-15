@@ -1,45 +1,55 @@
-<script setup lang="ts">
-
-import Lottery from './components/Lottery.vue'
-</script>
-
-<template class="app">
-  <header>
-    <div class="text-center text-[50px] font-bold">
-      <p>Lottery</p>
-    </div>
-  </header>
-
-  <main>
-    <Lottery />
-  </main>
+<template>
+  <div class="max-w-3xl mx-auto mt-[60px]">
+      <WinnersList 
+          :winners="winners"
+          :participants="participants"
+          @select-winner="addWinner"
+          @remove-winner="removeWinner"
+      />
+      <RegistrationForm 
+            :participants="participants"
+            :winners="winners" 
+            @add-participant="addParticipant"
+        />
+      <ParticipantsTable :participants="participants" />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+import RegistrationForm from './components/FormComponent.vue';
+import WinnersList from './components/WinnersListComponent.vue';
+import ParticipantsTable from './components/ParticipantsComponent.vue';
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+export default defineComponent({
+  components: {
+      RegistrationForm,
+      WinnersList,
+      ParticipantsTable
+  },
+  setup() {
+      const winners = ref<{ name: string }[]>([]);
+      const participants = ref<{ name: string; birthday: string; email: string; phone: string }[]>([]);
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+      const addParticipant = (participant: { name: string; birthday: string; email: string; phone: string }) => {
+          participants.value.push(participant);
+      };
+
+      const addWinner = (winner: { name: string }) => {
+          winners.value.push(winner);
+      };
+
+      const removeWinner = (index: number) => {
+          winners.value.splice(index, 1);
+      };
+
+      return {
+          winners,
+          participants,
+          addParticipant,
+          addWinner,
+          removeWinner
+      };
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+});
+</script>
